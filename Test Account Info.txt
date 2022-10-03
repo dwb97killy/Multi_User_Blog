@@ -1,0 +1,19 @@
+#Superuser#
+Account: test_test
+Email: test_test@gmail.com
+Password: test_test
+
+
+
+#Users#
+Account: test_0
+Email: test_0@gmail.com
+Password: test_0
+
+Account: test_1
+Email: test_1@gmail.com
+Password: test_1
+
+Account: test_2
+Email: test_2@gmail.com
+Password: test_2

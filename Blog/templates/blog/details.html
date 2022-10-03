@@ -1,0 +1,60 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+
+    {% if blogcontext.publish_time %}
+        <h1 class='posttitle loader'>{{ blogcontext.title }}</h1>
+        <div class="date postdate">
+            <p>The blog was published at: {{ blogcontext.publish_time }}</p>
+        </div>
+        <p class='postcontent' >{{ blogcontext.content|safe|linebreaksbr }}</p>
+        {% if user.is_authenticated and blogcontext.publisher.pk == user.pk %}
+            <a class="btn btn-primary" href="{% url 'update_blog' pk=blogcontext.pk %}"><span class="fa fa-pencil">Edit</span></a>
+            <a class="btn btn-primary" href="{% url 'delete_blog' pk=blogcontext.pk %}"><span class="fa fa-remove">Delete</span></a>
+            {% if blogcontext.approve_comments %}
+                <a class="btn btn-primary" href="{% url 'notapprove_comment' pk=blogcontext.pk %}"><span class="fa fa-remove">Forbid Comments</span></a>
+            {% else %}
+                <a class="btn btn-primary" href="{% url 'approve_comment' pk=blogcontext.pk %}"><span class="fa fa-remove">Approve Comments</span></a>
+            {% endif %}
+        {% endif %}
+        <hr>
+        {% if blogcontext.approve_comments %}
+            <a class="btn btn-primary btn-comment" href="{% url 'add_comment' pk=blogcontext.pk %}">Add Comment</a>
+            <div class="container">
+                {% for comment in blogcontext.comments.all %}
+                    <br>
+                    {% if user.is_authenticated or blogcontext.approve_comments %}
+                        {{ comment.create_time }}
+                        {% if user.is_authenticated and user.pk == comment.publisher.pk %}
+                            <a class="btn btn-primary" href="{% url 'delete_comment' pk=comment.pk %}"><span class="fa fa-remove">Delete Comment</span></a>
+                        {% endif %}
+                        <p>{{ comment.content|safe|linebreaks }}</p>
+                        <p>Posted by: <strong>{{ comment.publisher }}</strong></p>
+                    {% endif %}
+                    {% empty %}
+                    <p>No comments here.</p>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>Comments are forbidden now</p>
+        {% endif %}
+    {% else %}
+        {% if user.is_authenticated and blogcontext.publisher.pk == user.pk %}
+            <h1 class='posttitle loader'>{{ blogcontext.title }}</h1>
+            <div class="date postdate">
+                <p>The blog was created at: {{ blogcontext.create_time }}</p>
+            </div>
+            <p class='postcontent' >{{ blogcontext.content|safe|linebreaksbr }}</p>
+            <a class="btn btn-primary" href="{% url 'update_blog' pk=blogcontext.pk %}"><span class="fa fa-pencil">Edit</span></a>
+            <a class="btn btn-primary" href="{% url 'delete_blog' pk=blogcontext.pk %}"><span class="fa fa-remove">Delete</span></a>
+            {% if not blogcontext.publish_time %}
+                <a class="btn btn-primary" href="{% url 'publish_blog' pk=blogcontext.pk %}"><span class="fa fa-pencil">Publish</span></a>
+            {% endif %}
+            <hr>
+        {% else %}
+            <p>Page does not exist!</p>
+            <a class="btn btn-outline-dark" href="{% url 'home_page' %}">Home Page</a>
+        {% endif %}
+    {% endif %}
+
+{% endblock %}
